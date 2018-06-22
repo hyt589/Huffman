@@ -16,22 +16,18 @@ public class Huffman {
             HuffmanTree tree = new HuffmanTree(filename);
             tree.encode(tree.getRoot());
             Set<Character> keySet = tree.getMap().keySet();
+            BitSet bs = tree.compress();
 
-            for (Character c : keySet
-                    ) {
-                BitSet bs = (BitSet)tree.getMap().get(c);
-                System.out.print(c + " - ");
-                System.out.print(tree.getMap().get(c).toString() + " " + bs.toByteArray().toString() + "\n");
-            }
-            BitSet bs = (BitSet)tree.getMap().get(new Character('A'));
             System.out.println("\n\n");
             for (int i = 0; i < bs.size(); i++) {
-                if (bs.get(i)) {
+                if (bs.get(i))
                     System.out.print(1);
-                } else {
+                else
                     System.out.print(0);
-                }
             }
+
+            System.out.print("\n\n");
+            System.out.print(tree.decompress(bs));
 
 
         }

@@ -9,7 +9,7 @@ import java.util.*;
 public class HuffmanTree {
 
     private HuffmanNode root;
-    private HashMap<Character, BitSet> keyMap = new HashMap<>();
+    private HashMap<Character, String> keyMap = new HashMap<>();
     String text;
 
     private static Comparator<HuffmanNode>  nodeComparator = new Comparator<HuffmanNode>() {
@@ -102,20 +102,51 @@ public class HuffmanTree {
             }
         } else {
             //building a character-code pair and add to keyMap
-            BitSet bs = new BitSet(0);
-            for (int i = 0; i < aux.length(); i++) {
-                if (aux.charAt(i) == '1') {
-                    bs.set(i, true);
-                }else
-                    bs.set(i, false);
-            }
-            keyMap.put(new Character(node.getCh()), bs);
+            keyMap.put(new Character(node.getCh()), aux);
             System.out.println(node.getCh() + " " + aux);
         }
     }
 
     public void encode(HuffmanNode node) {
         encodeHelper(node, "");
+    }
+
+    public BitSet compress() {
+        String textOutput = "";
+        for (int i = 0; i < text.length(); i++) {
+            textOutput = textOutput + keyMap.get(text.charAt(i));
+        }
+        BitSet output = new BitSet();
+        for (int i = 0; i < textOutput.length(); i++) {
+            if (textOutput.charAt(i) == '1')
+                output.set(i, true);
+            else
+                output.set(i, false);
+        }
+        return output;
+    }
+
+    public String decompress(BitSet bin){
+        String o = "";
+        HuffmanNode ptr = root;
+        for (int i = 0; i < bin.size(); i++) {
+            if (!ptr.isLeaf()) {
+                if (bin.get(i)) {
+                    ptr = ptr.getRight();
+                } else {
+                    ptr = ptr.getLeft();
+                }
+            } else {
+                o = o + ptr.getCh();
+                ptr = root;
+                if (bin.get(i)) {
+                    ptr = ptr.getRight();
+                } else {
+                    ptr = ptr.getLeft();
+                }
+            }
+        }
+        return o;
     }
 
     public Map getMap() {
