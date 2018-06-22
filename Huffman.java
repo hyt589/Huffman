@@ -17,7 +17,6 @@ public class Huffman {
             tree.encode(tree.getRoot());
             Set<Character> keySet = tree.getMap().keySet();
             BitSet bs = tree.compress();
-
             System.out.println("\n\n");
             for (int i = 0; i < bs.size(); i++) {
                 if (bs.get(i))

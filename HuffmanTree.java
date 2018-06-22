@@ -123,7 +123,8 @@ public class HuffmanTree {
             else
                 output.set(i, false);
         }
-        return output;
+        //using BitSet.get() method to get a new BitSet that contains only the set bits in output
+        return output.get(0,output.length());
     }
 
     public String decompress(BitSet bin){
