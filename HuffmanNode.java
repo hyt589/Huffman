@@ -1,6 +1,8 @@
 package com.company;
 
-public class HuffmanNode {
+import java.io.Serializable;
+
+public class HuffmanNode implements Serializable {
 
     private char ch;
     private int freq;

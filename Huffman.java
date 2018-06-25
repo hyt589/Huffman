@@ -1,8 +1,10 @@
 package com.company;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Set;
@@ -30,14 +32,11 @@ public class Huffman {
             }
 
             System.out.print("\n\n");
-            System.out.print(tree.decompress(bs));
-            System.out.print("\n\n" + tree.getMap().toString());
+            //System.out.print(tree.decompress(bs));
+            //System.out.print("\n\n" + tree.getMap().toString());
             //----------end of testing codes------------
 
-            BitSet bsTree = new BitSet();
-            writeTree(tree.getRoot(), bsTree);
-            bsTree = bsTree.get(0, bsTree.length());
-            byte[] binTree = bsTree.toByteArray();
+
 
 
             byte[] buf = bs.toByteArray();
@@ -45,33 +44,71 @@ public class Huffman {
             boolean created = file.createNewFile();
             if (created) {
                 OutputStream outputStream = new FileOutputStream(filename + "_huffman");
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+                ObjectOutputStream treeWriter = new ObjectOutputStream(outputStream);
                 try {
-                    //outputStream.write(binTree);
+                    treeWriter.writeObject(tree);
                     outputStream.write(buf);
                 } finally {
                     outputStream.close();
+                    treeWriter.close();
                 }
+/*  uncomment for testing
+                //testing------------
+                BufferedInputStream fileInputStream = new BufferedInputStream(new FileInputStream(filename + "_huffman"));
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                try {
+                    HuffmanTree readtree = (HuffmanTree) objectInputStream.readObject();
+                    File comp = new File(filename + "_huffman");
+                    byte[] buff = new byte[(int)comp.length()];
+                    fileInputStream.read(buff);
+                    BitSet bss = BitSet.valueOf(buff);
+                    String str = readtree.decompress(bss);
+                    System.out.print(str);
+                }finally {
+                    fileInputStream.close();
+                    objectInputStream.close();
+                }
+                //end testing-------
+*/
+
             } else {
-                System.err.println("File name conflict");
+                System.err.println("\nFile name conflict");
             }
 
         } else if (args.length == 2) {
-            if (args[0] == "-d") {
-                String filename = args[2];
-                BitSet content = BitSet.valueOf(Files.readAllBytes(Paths.get(filename)));
-                BitSet binTree = BitSet.valueOf(Files.readAllBytes(Paths.get(filename + "-tree")));
+            if (args[0].equals("-d")) {
+                String filename = args[1];
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(filename));
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                HuffmanTree tree;
+                try {
+                    tree = (HuffmanTree)ois.readObject();
+                    File comp = new File(filename);
+                    File decomp = new File(filename + "_d");
+                    boolean created = decomp.createNewFile();
+                    byte[] input = new byte[(int)comp.length()];
+                    bis.read(input);
+                    BitSet bs = BitSet.valueOf(input);
+                    String text = tree.decompress(bs);
+                    byte[] buf = text.getBytes(Charset.forName("UTF-8"));
+                    if (created) {
+                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filename + "_d"));
+                        try {
+                            bos.write(buf);
+                        } finally {
+                            bos.close();
+                            System.out.println("\nDecompressed");
+                        }
+                    } else {
+                        System.err.print("\n\nFile Name Conflict\n" + text);
+                    }
+                }finally {
+                    bis.close();
+                    ois.close();
+                }
             }
         }
     }
 
-    private static void writeTree(HuffmanNode node, BitSet bs){
-        if (node.isLeaf()) {
-            bs.set(bs.length(), false);
-        } else {
-            bs.set(bs.length(), true);
-            writeTree(node.getLeft(), bs);
-            writeTree(node.getRight(), bs);
-        }
-    }
+
 }

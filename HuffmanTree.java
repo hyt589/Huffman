@@ -2,15 +2,16 @@ package com.company;
 
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class HuffmanTree {
+public class HuffmanTree implements Serializable {
 
     private HuffmanNode root;
     private HashMap<Character, String> keyMap = new HashMap<>();
-    String text;
+    transient private String text;
 
     private static Comparator<HuffmanNode>  nodeComparator = new Comparator<HuffmanNode>() {
         @Override
