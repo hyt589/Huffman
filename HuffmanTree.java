@@ -30,6 +30,8 @@ public class HuffmanTree {
         return root;
     }
 
+    public HuffmanTree(){}
+
     public HuffmanTree(String filename) throws Exception {
 
         text = new String(Files.readAllBytes(Paths.get(filename)));
@@ -153,7 +155,6 @@ public class HuffmanTree {
     public Map getMap() {
         return keyMap;
     }
-
 
 
 
